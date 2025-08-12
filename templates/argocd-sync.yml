@@ -1,0 +1,19 @@
+---
+# ArgoCD Sync Template
+# This template provides standardized ArgoCD synchronization capabilities
+spec:
+  version: 1.0
+  description: Standard ArgoCD sync template
+
+argocd-sync:
+  stage: deploy
+  image: argoproj/argocd-cli:latest
+  variables:
+    ARGOCD_SERVER: ${ARGOCD_SERVER}
+    ARGOCD_AUTH_TOKEN: ${ARGOCD_AUTH_TOKEN}
+  script:
+    - echo "Syncing application ${APP_NAME} in ArgoCD"
+    - argocd app sync ${APP_NAME} --server ${ARGOCD_SERVER} --auth-token ${ARGOCD_AUTH_TOKEN} --grpc-web
+    - argocd app wait ${APP_NAME} --server ${ARGOCD_SERVER} --auth-token ${ARGOCD_AUTH_TOKEN} --grpc-web --health --timeout 300
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
