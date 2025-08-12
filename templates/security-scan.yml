@@ -1,0 +1,22 @@
+---
+# Security Scan Template
+# This template provides standardized security scanning capabilities
+spec:
+  version: 1.0
+  description: Standard security scanning template
+
+security-scan:
+  stage: test
+  image: aquasec/trivy:latest
+  variables:
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: .trivycache/
+  script:
+    - echo "Running security scan on ${IMAGE_NAME}:${IMAGE_TAG}"
+    - trivy image --exit-code 1 --severity HIGH,CRITICAL ${IMAGE_NAME}:${IMAGE_TAG}
+  cache:
+    paths:
+      - .trivycache/
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  allow_failure: true
