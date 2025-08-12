@@ -1,0 +1,21 @@
+---
+# Docker Build Template
+# This template provides standardized Docker build capabilities
+spec:
+  version: 1.0
+  description: Standard Docker build template
+
+docker-build:
+  stage: build
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  script:
+    - echo "Building Docker image ${IMAGE_NAME}:${IMAGE_TAG}"
+    - docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+    - echo "Pushing Docker image to registry"
+    - docker push ${IMAGE_NAME}:${IMAGE_TAG}
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
