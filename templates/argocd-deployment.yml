@@ -1,0 +1,23 @@
+---
+# ArgoCD Deployment Template
+# This template provides standardized ArgoCD deployment capabilities
+spec:
+  version: 1.0
+  description: Standard ArgoCD deployment template
+
+'$[[ inputs.as ]]':
+  stage: deploy
+  image: bitnami/kubectl:latest
+  variables:
+    KUBE_CONFIG: ${KUBE_CONFIG}
+    ENVIRONMENT: ${ENVIRONMENT}
+  script:
+    - echo "Deploying to ${ENVIRONMENT} environment"
+    - echo "${KUBE_CONFIG}" > kubeconfig.yaml
+    - export KUBECONFIG=kubeconfig.yaml
+    - kubectl apply -f k8s/deployment-${ENVIRONMENT}.yaml
+    - kubectl rollout status deployment/${APP_NAME} -n ${NAMESPACE} --timeout=300s
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  environment:
+    name: $ENVIRONMENT
