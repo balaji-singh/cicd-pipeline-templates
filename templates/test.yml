@@ -1,0 +1,23 @@
+---
+# Test Template
+# This template provides standardized testing capabilities
+spec:
+  version: 1.0
+  description: Standard test template
+
+component-job:
+  stage: test
+  image: ${TEST_IMAGE}
+  variables:
+    TEST_ARGS: ${TEST_ARGS}
+  script:
+    - echo "Running tests with ${TEST_ARGS}"
+    - ./run-tests.sh ${TEST_ARGS}
+  artifacts:
+    paths:
+      - test-results/
+    reports:
+      junit: test-results/junit.xml
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
